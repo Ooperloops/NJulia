@@ -2,6 +2,8 @@ package math;
 
 public class M_array {
     public double[] array;
+    public int cutDensity = 0; // Optional, only used within back propagation
+
     public M_array(double[] arr){
         array = arr;
     }
@@ -33,6 +35,15 @@ public class M_array {
         M_array newArray = new M_array(new double[arr.array.length]);
         for(int i = 0; i < array.length; i++){
             newArray.array[i] = array[i] += arr.array[i];
+        }
+
+        return newArray;
+    }
+    public M_array subtract(M_array arr){
+        if(array.length != arr.array.length) System.out.println("!!: shape error");
+        M_array newArray = new M_array(new double[arr.array.length]);
+        for(int i = 0; i < array.length; i++){
+            newArray.array[i] = array[i] -= arr.array[i];
         }
 
         return newArray;
