@@ -2,39 +2,44 @@ package collections.blocks;
 import math.M_activation;
 import math.M_array;
 import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class L_denseLayer extends L_layer {
 
     public M_array layerDelta;
-    private final L_layer front;
-    private final L_layer back;
+    public L_layer front;
+    public L_layer back;
     private Random rd;
+    private final M_activation activation;
 
 
+    public L_denseLayer(int nodes, M_activation.activations activationType){
 
-    public L_denseLayer(int nodes, L_layer front, L_outputLayer back){
-        rd = new Random();
         layer = new M_array(new double[nodes]);
         unActivatedLayer = new M_array(new double[nodes]);
-        biases = new M_array(new double[nodes]);
-        weights = new M_array(new double[front.layer.array.length * nodes]);
+
+        this.activation = new M_activation(activationType);
+    }
+    public void setConnections(L_layer front, L_layer back){
+        this.front = front;
+        this.back = back;
+        rd = new Random();
+        biases = new M_array(new double[layer.array.length]);
+        weights = new M_array(new double[front.layer.array.length * layer.array.length]);
         for(int s = 0; s < weights.array.length; s++){
             weights.array[s] = rd.nextDouble();
         }
         for(int t = 0; t < biases.array.length; t++){
             biases.array[t] = rd.nextDouble();
         }
-        this.front = front;
-        this.back = back;
     }
+
     @Override
     public void layerPass(){
         for(int i = 0; i < layer.array.length; i++){
             M_array iterationArr = front.layer.multiply(weights.slice(front.layer.array.length, i));
             unActivatedLayer.array[i] =iterationArr.sum() + biases.array[i];
-            layer.array[i] = (back == null)
-                    ? M_activation.sigmoid(iterationArr.sum() + biases.array[i])
-                    : M_activation.reLU(iterationArr.sum() + biases.array[i]);
+            layer.array[i] = activation.activate(iterationArr.sum() + biases.array[i]);
         }
     }
 
@@ -42,13 +47,12 @@ public class L_denseLayer extends L_layer {
     // Backpropgation methods
     //-----------------------------------------------------------------------------------------------------
     @Override
-    public void backPropagateLayer() {
+    public void backPropagateLayer(double alpha) {
         for(int i = 0; i < layer.array.length; i++){
-            biases.array[i] -= layerDelta.array[i];
+            biases.array[i] -= layerDelta.array[i]*alpha;
             for(int j = 0; j < front.layer.array.length; j++){
                 weights.array[i * front.layer.array.length + j] -=
-                        layerDelta.array[i]
-                        * front.layer.array[j];
+                        layerDelta.array[i] * front.layer.array[j]*alpha;
             }
         }
     }
@@ -59,8 +63,9 @@ public class L_denseLayer extends L_layer {
             for(int j = 0; j < back.layerDelta.array.length; j++){
                 double delta = back.layerDelta.array[j]
                         * back.weights.array[j * back.layerDelta.array.length + i]
-                        * M_activation.dDxReLU(unActivatedLayer.array[i]);
+                        * activation.activateDx(unActivatedLayer.array[i]);
                 layerDelta.array[i] += delta;
+
             }
         }
     }

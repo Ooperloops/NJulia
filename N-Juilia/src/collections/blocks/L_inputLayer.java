@@ -19,7 +19,7 @@ public class L_inputLayer extends L_layer {
     }
 
     @Override
-    public void backPropagateLayer() {
+    public void backPropagateLayer(double alpha) {
         return;
     }
 }

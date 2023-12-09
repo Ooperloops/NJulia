@@ -12,18 +12,26 @@ public class testing {
     }
     public static void main(String args[]) {
         N_perceptron julia = new N_perceptron();
-        M_array[] testing = {new M_array(new double[]{4, 2, 0}),
-                            new M_array(new double[]{5, 3, 0}),
-                            new M_array(new double[]{4, 3, 0}),
-                            new M_array(new double[]{1, 1, 1}),
-                            new M_array(new double[]{1, 1.5, 1}),
-                            new M_array(new double[]{1, 2, 1})};
+        M_array[] testing = {new M_array(new double[]{1,0}),
+                new M_array(new double[]{2,0}),
+                new M_array(new double[]{3,0}),
+                new M_array(new double[]{7,0}),
+                new M_array(new double[]{8,0}),
+                new M_array(new double[]{5,0}),
+                new M_array(new double[]{10,1}),
+                new M_array(new double[]{11,1}),
+                new M_array(new double[]{12,1}),
+                new M_array(new double[]{19,1}),
+                new M_array(new double[]{20,1}),
+                new M_array(new double[]{14,1}),};
 
-        int epochs = 50000000;
+        int epochs = 500000;
         for(int i = 0; i < epochs; i++){
-            M_array input = testing[getRandomNumber(0,5)].slice(2, 0);
-            M_array output = testing[getRandomNumber(0,5)].slice(1, 2);
+            int a = getRandomNumber(0,testing.length -1);
+            M_array input = testing[a].slice(1, 0);
+            M_array output = testing[a].slice(1, 1);
             julia.forwardPass(input);
+
             julia.train(output);
         }
     }

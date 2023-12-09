@@ -8,5 +8,5 @@ public abstract class L_layer {
     public M_array layerDelta;
     protected M_array unActivatedLayer;
     public abstract void layerPass();
-    public abstract void backPropagateLayer();
+    public abstract void backPropagateLayer(double alpha);
 }
